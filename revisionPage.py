@@ -60,17 +60,27 @@ class RevisionPage(QWidget):
 		self.selectedLists = []
 		self.selectedQuestionIDs = []
 		self.currentQuestionID = ""
-
-
+		
+		self.numQuestionsSelected = 0
+		self.numQuestionsAnswered = 0
 
 		self.connection = sqlite3.connect("Universal.db")
 		self.cursor = self.connection.cursor()
 
 	def setUp(self, selectedLists):
 		print("HERE")
+		self.numQuestionsSelected = 0
 		self.selectedLists = selectedLists;#listIDs
 		self.getUniqueQuestionIDs()
 		self.progressBar.setValue(0)
+		conditions = ""
+		for listID in self.selectedLists:
+			conditions = conditions + "listID = " + str(listID) + " OR "
+		conditions = conditions[:-3]
+		self.cursor.execute("SELECT COUNT (*) FROM questions WHERE (" + conditions + ") AND askDate <= DATE('now')")
+		self.numQuestionsSelected = self.cursor.fetchall()[0][0]
+		self.numQuestionsAnswered = 0
+		print("you have selected: " + str(self.numQuestionsSelected))
 		if len(self.selectedQuestionIDs) != 0:
 			self.askQuestion(self.selectedQuestionIDs[0])
 		else:
@@ -84,6 +94,10 @@ class RevisionPage(QWidget):
 		self.questionDisplay.setText(question)
 
 	def processCorrectAnswer(self):
+		self.numQuestionsAnswered = self.numQuestionsAnswered + 1
+		percentComplete = (self.numQuestionsAnswered / self.numQuestionsSelected) * 100
+		print(percentComplete)
+		self.progressBar.setValue(int(percentComplete))
 		frequency = 1500  # Set Frequency To 2500 Hertz
 		duration = 500  # Set Duration To 1000 ms == 1 second
 		winsound.Beep(frequency, duration)
@@ -94,7 +108,7 @@ class RevisionPage(QWidget):
 		self.cursor.execute("SELECT streak FROM questions WHERE questionID = " + str(self.currentQuestionID))
 		newStreak = self.cursor.fetchall()[0][0]
 		#update the ask date
-		self.cursor.execute("UPDATE questions SET askDate = DATE(DATE('now'), '+" + str(newStreak) + " day') WHERE questionID = " + str(self.currentQuestionID))
+		self.cursor.execute("UPDATE questions SET askDate = DATE(DATE('now'), '+" + str(newStreak * newStreak) + " day') WHERE questionID = " + str(self.currentQuestionID))
 		self.connection.commit()
 		self.correctnessDisplay.setText("Correct!")
 		#remove ID of the question answered correctly
@@ -123,12 +137,12 @@ class RevisionPage(QWidget):
 		correctAnswers = ""
 		for answer in answers:
 			answer = answer[0]
-			print(answer)
-			print(userAnswer)
+			answer = answer.replace("&lt;", "<")
+			answer = answer.replace("&gt;", ">")
 			correctAnswers = correctAnswers + answer + ", "
 			if answer == userAnswer:
-				correct = True
-				break
+                                correct = True
+                                break
 		if correct == True:
 			self.processCorrectAnswer()
 		else:
@@ -143,14 +157,12 @@ class RevisionPage(QWidget):
 			self.homeButtonClick()
 
 	def getUniqueQuestionIDs(self):
-		conditions = "";
+		conditions = ""
 		for listID in self.selectedLists:
 			conditions = conditions + "listID = " + str(listID) + " OR "
 		conditions = conditions[:-3]
-		print("SELECT questionID FROM questions WHERE (" + conditions + ") AND askDate <= DATE('now')")
 		self.cursor.execute("SELECT questionID FROM questions WHERE (" + conditions + ") AND askDate <= DATE('now')")
 		questionIDs = self.cursor.fetchall()
-		print(questionIDs)
 		for tup in questionIDs:
 			self.selectedQuestionIDs.append(tup[0])
 		random.shuffle(self.selectedQuestionIDs)

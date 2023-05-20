@@ -8,7 +8,7 @@ class AddQuestionsPage(QWidget):
 		QWidget.__init__(self)
 		self.mainWindow = mainWindow
 		mainLayout = QVBoxLayout()
-
+		
 		self.addQuestionsLabel = QLabel("Add questions")
 		self.addQuestionsLabel.setFont(QFont('Arial', 33))
 		self.addQuestionsLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -17,6 +17,7 @@ class AddQuestionsPage(QWidget):
 		self.questionInput = QTextEdit(self)
 		self.questionInput.setText("Type your question")
 		self.questionInput.setFont(QFont('Arial', 40))
+		self.questionInput.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		mainLayout.addWidget(self.questionInput)
 
 		self.answerInput = QLineEdit(self)
@@ -43,6 +44,8 @@ class AddQuestionsPage(QWidget):
 	def addQuestionButtonClicked(self, button):
 		newQuestion = self.questionInput.toPlainText()
 		newQuestion = newQuestion.replace("'","''")
+		newQuestion = newQuestion.replace(">", "&lt;")
+		newQuestion = newQuestion.replace("<", "&gt;")
 		newAnswers = self.answerInput.text()
 		print(newQuestion)
 		print(newAnswers)
@@ -61,9 +64,11 @@ class AddQuestionsPage(QWidget):
 		#insert new answers into answers table
 		answers = newAnswers.lower()
 		answers = answers.replace(" ", "")
-		answers = answers.split(",")
+		answers = answers.split("`")
 		for answer in answers:
 			answer = answer.replace("'","''")
+			answer = answer.replace(">", "&gt;")
+			answer = answer.replace("<", "&lt;")
 			print("INSERT INTO answers (questionID, answer) VALUES (" + str(newQuestionID) + ", '" + answer + "')")
 			cursor.execute("INSERT INTO answers (questionID, answer) VALUES (" + str(newQuestionID) + ", '" + answer + "')")
 			connection.commit()
@@ -75,4 +80,4 @@ class AddQuestionsPage(QWidget):
 	def setListToAddTo(self, listName, listID):
 		self.listName = listName
 		self.listID = listID
-		self.addQuestionsLabel.setText("You are adding questions to: " + listName)
+		self.addQuestionsLabel.setText("Adding to: " + listName)

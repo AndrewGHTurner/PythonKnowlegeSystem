@@ -67,9 +67,9 @@ class DeleteListsPage(QWidget):
 			listName = self.listToDelete[0]
 			listID = self.listToDelete[1] 	
 			self.deletePopup = QMessageBox()
-			self.deletePopup.setIcon(QMessageBox.Warning)
+			self.deletePopup.setIcon(QMessageBox.Icon.Warning)
 			self.deletePopup.setText("You are deleting: " + listName)
-			self.deletePopup.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+			self.deletePopup.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
 			self.deletePopup.buttonClicked.connect(self.deleteButtonPopupClick)
 
 			self.deletePopup.show()

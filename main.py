@@ -18,7 +18,7 @@ import time
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setGeometry(400, 40, 1000, 1000)
+        self.setGeometry(400, 40, 100, 100)
         self.stack = QStackedWidget(self)
 
         start = int(round(time.time() * 1000))
@@ -54,7 +54,6 @@ class MainWindow(QMainWindow):
         self.connection = sqlite3.connect("Universal.db")
         self.cursor = self.connection.cursor()
         self.setUpDatabase()
-          # in bytes 
 
     def setUpDatabase(self):#this will create the database and it's tables if they are not already available
         self.cursor.execute("PRAGMA foreign_keys = ON")
@@ -108,7 +107,6 @@ class MainWindow(QMainWindow):
         self.connection.close()
 
 def main():
-    #set up the database if it isn't already
 
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
