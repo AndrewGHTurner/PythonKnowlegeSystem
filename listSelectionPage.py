@@ -48,7 +48,8 @@ class ListSelectionPage(QWidget):
 
 		selectedListWidget = QWidget()                                          
 		selectedListView = QScrollArea()                                      
-		self.selectedListViewLayout = QVBoxLayout()                             
+		self.selectedListViewLayout = QVBoxLayout()       
+
 		self.selectedListViewLayout.setAlignment(Qt.AlignmentFlag.AlignTop)                           
 		selectedListWidget.setLayout(self.selectedListViewLayout)                     
 		selectedListView.setWidget(selectedListWidget)                           
@@ -146,7 +147,7 @@ class ListSelectionPage(QWidget):
 		listRowLayout = QHBoxLayout()
 		listRow = QWidget()
 		listName = QLabel(name)
-		listName.setFont(QFont('Arial', 33))
+		listName.setFont(QFont('Arial', 15))
 		listRowLayout.addWidget(listName)
 
 
@@ -185,7 +186,7 @@ class ListSelectionPage(QWidget):
 		removeButton.clicked.connect(lambda: self.removeButtonClick(self.sender()))
 		removeButton.setStyleSheet("background-color : red;")
 		ListNameLable = QLabel(name)
-		ListNameLable.setFont(QFont('Arial', 33))
+		ListNameLable.setFont(QFont('Arial', 15))
 		selectedListRowLayout.addWidget(ListNameLable)
 		selectedListRowLayout.addWidget(removeButton)
 		selectedListRow = QWidget()
